@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "driveroptions.h"
+
 #include <QScopedPointer>
 #include <qpa/qplatformintegration.h>
 #include <qpa/qplatformscreen.h>
@@ -38,7 +40,7 @@ class LedMatrixIntegration : public QPlatformIntegration
         struct Options
         {
                 OptionFlags flags{Option::None};
-                QSize screen_size{32, 32};
+                DriverOptions driver_options;
         };
 
     private:

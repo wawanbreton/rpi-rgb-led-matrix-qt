@@ -26,7 +26,7 @@ using namespace Qt::StringLiterals;
 
 LedMatrixIntegration::LedMatrixIntegration(const QStringList& parameters) :
     options_(parseOptions(parameters)),
-    primary_screen_(new LedMatrixScreen(options_.screen_size))
+    primary_screen_(new LedMatrixScreen(options_.driver_options.screen_size))
 {
     QWindowSystemInterface::handleScreenAdded(primary_screen_);
 }
@@ -72,11 +72,11 @@ LedMatrixIntegration::Options LedMatrixIntegration::parseOptions(const QStringLi
         }
         else if((regexpMatch = regexpLedCols.match(param)).hasMatch())
         {
-            options.screen_size.setWidth(regexpMatch.captured(1).toInt());
+            options.driver_options.screen_size.setWidth(regexpMatch.captured(1).toInt());
         }
         else if((regexpMatch = regexpLedRows.match(param)).hasMatch())
         {
-            options.screen_size.setHeight(regexpMatch.captured(1).toInt());
+            options.driver_options.screen_size.setHeight(regexpMatch.captured(1).toInt());
         }
     }
 
@@ -125,7 +125,7 @@ QPlatformWindow* LedMatrixIntegration::createPlatformWindow(QWindow* window) con
 
 QPlatformBackingStore* LedMatrixIntegration::createPlatformBackingStore(QWindow* window) const
 {
-    return new LedMatrixBackingStore(window);
+    return new LedMatrixBackingStore(window, options_.driver_options);
 }
 
 QAbstractEventDispatcher* LedMatrixIntegration::createEventDispatcher() const
