@@ -43,12 +43,12 @@ class LedMatrixIntegration : public QPlatformIntegration
         };
 
     private:
-        Options parseOptions(const QStringList& paramList);
+        void parseOptions(const QStringList& paramList);
 
     private:
         mutable QPlatformFontDatabase* font_database_{nullptr};
         mutable QScopedPointer<QPlatformNativeInterface> native_interface_;
-        const Options options_;
+        Options options_;
         LedMatrixScreen* primary_screen_{nullptr};
 
         // Store some config variable strings to make sure the c_str pointers remains valid
