@@ -26,15 +26,6 @@ using namespace Qt::StringLiterals;
 
 LedMatrixIntegration::LedMatrixIntegration(const QStringList& parameters)
 {
-    options_.driver_options.hardware_mapping = "adafruit-hat";
-    options_.driver_options.rows = 32;
-    options_.driver_options.cols = 32;
-    options_.driver_options.chain_length = 1;
-    options_.driver_options.parallel = 1;
-    options_.driver_options.multiplexing = 0;
-    options_.driver_options.pixel_mapper_config = "";
-    options_.driver_options.brightness = 100;
-
     parseOptions(parameters);
 
     primary_screen_ =
@@ -70,7 +61,23 @@ void LedMatrixIntegration::parseOptions(const QStringList& paramList)
     QRegularExpression regexpMultiplexing("multiplexing=([0-9]{1,2})");
     QRegularExpression regexpPixelMapper(
         "((^pixel-mapper=|[+])(U-mapper|V-mapper|Mirror=[HV]|Rotate=[0-9]+))+");
+    QRegularExpression regexpPwmBits("pwm-bits=([0-9]{1,2})");
     QRegularExpression regexpBrightness("brightness=([0-9]+)");
+    QRegularExpression regexpScanMode("scan-mode=([01])");
+    QRegularExpression regexpRowAddrType("row-addr-type=([0-4])");
+    QString paramShowRefresh("show-refresh");
+    QRegularExpression regexpLimitRefresh("limit-refresh=([0-9]+)");
+    QString paramInverse("inverse");
+    QRegularExpression regexpRgbSequence("rgb-sequence=([RGB]{3})");
+    QRegularExpression regexpPwmLsbNanoseconds("pwm-lsb-nanoseconds=([0-9]+)");
+    QRegularExpression regexpPwmDitherBits("pwm-dither-bits=([012])");
+    QString paramDisableHardwarePulse("no-hardware-pulse");
+    QRegularExpression regexpPanelType("panel_type=(FM6126A|FM6127)");
+    QRegularExpression regexpSlowdownGpio("slowdown-gpio=([0-4])");
+    QString paramDaemon("daemon");
+    QRegularExpression regexpDropPrivileges("no-drop-privs=(-1|0|1)");
+    QRegularExpression regexpDropPrivilegesUser("drop-priv-user=([a-zA-Z0-9-_]+)");
+    QRegularExpression regexpDropPrivilegesGroup("drop-priv-group=([a-zA-Z0-9-_]+)");
 
     QRegularExpressionMatch regexpMatch;
     for(const QString& param: paramList)
@@ -116,13 +123,82 @@ void LedMatrixIntegration::parseOptions(const QStringList& paramList)
         {
             // We don't use the original set of separators because they are recognized by Qt
             // as delimitors for plugin settings
-            QString pixel_mapper = regexpMatch.captured(0).mid(13).replace('+', ';').replace('=', ':');
+            QString pixel_mapper =
+                regexpMatch.captured(0).mid(13).replace('+', ';').replace('=', ':');
             pixel_mapper_ = pixel_mapper.toStdString();
             options_.driver_options.pixel_mapper_config = pixel_mapper_.c_str();
+        }
+        else if((regexpMatch = regexpPwmBits.match(param)).hasMatch())
+        {
+            options_.driver_options.pwm_bits = regexpMatch.captured(1).toInt();
         }
         else if((regexpMatch = regexpBrightness.match(param)).hasMatch())
         {
             options_.driver_options.brightness = regexpMatch.captured(1).toInt();
+        }
+        else if((regexpMatch = regexpScanMode.match(param)).hasMatch())
+        {
+            options_.driver_options.scan_mode = regexpMatch.captured(1).toInt();
+        }
+        else if((regexpMatch = regexpRowAddrType.match(param)).hasMatch())
+        {
+            options_.driver_options.row_address_type = regexpMatch.captured(1).toInt();
+        }
+        else if(param == paramShowRefresh)
+        {
+            options_.driver_options.show_refresh_rate = true;
+        }
+        else if((regexpMatch = regexpLimitRefresh.match(param)).hasMatch())
+        {
+            options_.driver_options.limit_refresh_rate_hz = regexpMatch.captured(1).toInt();
+        }
+        else if(param == paramInverse)
+        {
+            options_.driver_options.inverse_colors = true;
+        }
+        else if((regexpMatch = regexpRgbSequence.match(param)).hasMatch())
+        {
+            rgb_sequence_ = regexpMatch.captured(1).toInt();
+            options_.driver_options.led_rgb_sequence = rgb_sequence_.c_str();
+        }
+        else if((regexpMatch = regexpPwmLsbNanoseconds.match(param)).hasMatch())
+        {
+            options_.driver_options.pwm_lsb_nanoseconds = regexpMatch.captured(1).toInt();
+        }
+        else if((regexpMatch = regexpPwmDitherBits.match(param)).hasMatch())
+        {
+            options_.driver_options.pwm_dither_bits = regexpMatch.captured(1).toInt();
+        }
+        else if(param == paramDisableHardwarePulse)
+        {
+            options_.driver_options.disable_hardware_pulsing = true;
+        }
+        else if((regexpMatch = regexpPanelType.match(param)).hasMatch())
+        {
+            panel_type_ = regexpMatch.captured(1).toStdString();
+            options_.driver_options.panel_type = panel_type_.c_str();
+        }
+        else if((regexpMatch = regexpSlowdownGpio.match(param)).hasMatch())
+        {
+            options_.runtime_options.gpio_slowdown = regexpMatch.captured(1).toInt();
+        }
+        else if(param == paramDaemon)
+        {
+            options_.runtime_options.daemon = true;
+        }
+        else if((regexpMatch = regexpDropPrivileges.match(param)).hasMatch())
+        {
+            options_.runtime_options.drop_privileges = regexpMatch.captured(1).toInt();
+        }
+        else if((regexpMatch = regexpDropPrivilegesUser.match(param)).hasMatch())
+        {
+            drop_privileges_user_ = regexpMatch.captured(1).toStdString();
+            options_.runtime_options.drop_priv_user = drop_privileges_user_.c_str();
+        }
+        else if((regexpMatch = regexpDropPrivilegesGroup.match(param)).hasMatch())
+        {
+            drop_privileges_group_ = regexpMatch.captured(1).toStdString();
+            options_.runtime_options.drop_priv_group = drop_privileges_group_.c_str();
         }
         else
         {
@@ -173,7 +249,7 @@ QPlatformWindow* LedMatrixIntegration::createPlatformWindow(QWindow* window) con
 
 QPlatformBackingStore* LedMatrixIntegration::createPlatformBackingStore(QWindow* window) const
 {
-    return new LedMatrixBackingStore(window, options_.driver_options);
+    return new LedMatrixBackingStore(window, options_.driver_options, options_.runtime_options);
 }
 
 QAbstractEventDispatcher* LedMatrixIntegration::createEventDispatcher() const

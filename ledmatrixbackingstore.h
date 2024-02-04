@@ -11,7 +11,8 @@ class LedMatrixBackingStore : public QPlatformBackingStore
 {
     public:
         LedMatrixBackingStore(QWindow* window,
-                              const rgb_matrix::RGBMatrix::Options& driver_options);
+                              const rgb_matrix::RGBMatrix::Options& driver_options,
+                              const rgb_matrix::RuntimeOptions& runtime_options);
         ~LedMatrixBackingStore();
 
         QPaintDevice* paintDevice() override;

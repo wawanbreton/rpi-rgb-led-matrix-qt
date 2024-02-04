@@ -40,6 +40,7 @@ class LedMatrixIntegration : public QPlatformIntegration
         {
                 OptionFlags flags{Option::None};
                 rgb_matrix::RGBMatrix::Options driver_options;
+                rgb_matrix::RuntimeOptions runtime_options;
         };
 
     private:
@@ -54,4 +55,8 @@ class LedMatrixIntegration : public QPlatformIntegration
         // Store some config variable strings to make sure the c_str pointers remains valid
         std::string hardware_mapping_;
         std::string pixel_mapper_;
+        std::string rgb_sequence_;
+        std::string panel_type_;
+        std::string drop_privileges_user_;
+        std::string drop_privileges_group_;
 };

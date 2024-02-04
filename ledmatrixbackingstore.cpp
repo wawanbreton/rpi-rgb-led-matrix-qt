@@ -12,14 +12,12 @@
 using namespace Qt::StringLiterals;
 
 LedMatrixBackingStore::LedMatrixBackingStore(QWindow* window,
-                                             const rgb_matrix::RGBMatrix::Options& driver_options) :
+                                             const rgb_matrix::RGBMatrix::Options& driver_options,
+                                             const rgb_matrix::RuntimeOptions& runtime_options) :
     QPlatformBackingStore(window),
-    options_(driver_options)
+    options_(driver_options),
+    matrix_(rgb_matrix::CreateMatrixFromOptions(driver_options, runtime_options))
 {
-    rgb_matrix::RuntimeOptions runtime_options;
-    // runtime.drop_privileges = -1; // Need this otherwise the touchscreen doesn't work
-    // runtime.gpio_slowdown = 4;
-    matrix_ = rgb_matrix::CreateMatrixFromOptions(driver_options, runtime_options);
     if(!matrix_)
     {
         qWarning("could not create matrix");
