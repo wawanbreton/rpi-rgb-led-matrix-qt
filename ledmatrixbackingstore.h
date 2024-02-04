@@ -3,20 +3,15 @@
 
 #pragma once
 
-#include "driveroptions.h"
-
 #include <QImage>
+#include <led-matrix.h>
 #include <qpa/qplatformbackingstore.h>
-
-namespace rgb_matrix
-{
-    class RGBMatrix;
-}
 
 class LedMatrixBackingStore : public QPlatformBackingStore
 {
     public:
-        LedMatrixBackingStore(QWindow* window, const DriverOptions& driver_options);
+        LedMatrixBackingStore(QWindow* window,
+                              const rgb_matrix::RGBMatrix::Options& driver_options);
         ~LedMatrixBackingStore();
 
         QPaintDevice* paintDevice() override;
@@ -24,7 +19,7 @@ class LedMatrixBackingStore : public QPlatformBackingStore
         void resize(const QSize& size, const QRegion& staticContents) override;
 
     private:
-        const DriverOptions options_;
+        const rgb_matrix::RGBMatrix::Options options_;
         QImage image_;
         rgb_matrix::RGBMatrix* matrix_{nullptr};
 };

@@ -3,9 +3,8 @@
 
 #pragma once
 
-#include "driveroptions.h"
-
 #include <QScopedPointer>
+#include <led-matrix.h>
 #include <qpa/qplatformintegration.h>
 #include <qpa/qplatformscreen.h>
 
@@ -40,15 +39,16 @@ class LedMatrixIntegration : public QPlatformIntegration
         struct Options
         {
                 OptionFlags flags{Option::None};
-                DriverOptions driver_options;
+                rgb_matrix::RGBMatrix::Options driver_options;
         };
 
     private:
-        static Options parseOptions(const QStringList& paramList);
+        Options parseOptions(const QStringList& paramList);
 
     private:
         mutable QPlatformFontDatabase* font_database_{nullptr};
         mutable QScopedPointer<QPlatformNativeInterface> native_interface_;
         const Options options_;
         LedMatrixScreen* primary_screen_{nullptr};
+        std::string hardware_mapping_;
 };

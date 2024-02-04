@@ -26,7 +26,7 @@ using namespace Qt::StringLiterals;
 
 LedMatrixIntegration::LedMatrixIntegration(const QStringList& parameters) :
     options_(parseOptions(parameters)),
-    primary_screen_(new LedMatrixScreen(options_.driver_options.screen_size))
+    primary_screen_(new LedMatrixScreen(options_.driver_options.rows, options_.driver_options.cols))
 {
     QWindowSystemInterface::handleScreenAdded(primary_screen_);
 }
@@ -51,10 +51,18 @@ bool LedMatrixIntegration::hasCapability(QPlatformIntegration::Capability cap) c
 LedMatrixIntegration::Options LedMatrixIntegration::parseOptions(const QStringList& paramList)
 {
     Options options;
+    options.driver_options.hardware_mapping = "adafruit-hat";
+    options.driver_options.rows = 32;
+    options.driver_options.cols = 32;
+    options.driver_options.chain_length = 1;
+    options.driver_options.parallel = 1;
 
     QRegularExpression regexpCols("cols=([0-9]+)");
     QRegularExpression regexpRows("rows=([0-9]+)");
     QRegularExpression regexpBrightness("brightness=([0-9]+)");
+    QRegularExpression regexpGpioMapping("gpio-mapping=([a-z-]+)");
+    QRegularExpression regexpChain("chain=([0-9]+)");
+    QRegularExpression regexpParallel("parallel=([123])");
     QRegularExpressionMatch regexpMatch;
 
     for(const QString& param: paramList)
@@ -73,15 +81,29 @@ LedMatrixIntegration::Options LedMatrixIntegration::parseOptions(const QStringLi
         }
         else if((regexpMatch = regexpCols.match(param)).hasMatch())
         {
-            options.driver_options.screen_size.setWidth(regexpMatch.captured(1).toInt());
+            options.driver_options.cols = regexpMatch.captured(1).toInt();
         }
         else if((regexpMatch = regexpRows.match(param)).hasMatch())
         {
-            options.driver_options.screen_size.setHeight(regexpMatch.captured(1).toInt());
+            options.driver_options.rows = regexpMatch.captured(1).toInt();
         }
         else if((regexpMatch = regexpBrightness.match(param)).hasMatch())
         {
             options.driver_options.brightness = regexpMatch.captured(1).toInt();
+        }
+        else if((regexpMatch = regexpGpioMapping.match(param)).hasMatch())
+        {
+            // Store variable locally to make sure the c_str pointer remains valid
+            hardware_mapping_ = regexpMatch.captured(1).toStdString();
+            options.driver_options.hardware_mapping = hardware_mapping_.c_str();
+        }
+        else if((regexpMatch = regexpChain.match(param)).hasMatch())
+        {
+            options.driver_options.chain_length = regexpMatch.captured(1).toInt();
+        }
+        else if((regexpMatch = regexpParallel.match(param)).hasMatch())
+        {
+            options.driver_options.parallel = regexpMatch.captured(1).toInt();
         }
     }
 

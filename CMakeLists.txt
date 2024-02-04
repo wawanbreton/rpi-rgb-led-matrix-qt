@@ -29,7 +29,6 @@ target_sources(${PROJECT_NAME}
     ledmatrixbackingstore.cpp ledmatrixbackingstore.h
     ledmatrixintegration.cpp ledmatrixintegration.h
     ledmatrixscreen.cpp ledmatrixscreen.h
-    driveroptions.h
 )
 
 # Include headers for rpi-rgb-led-matrix
