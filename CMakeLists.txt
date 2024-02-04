@@ -4,6 +4,14 @@ project(rpi-rgb-led-matrix)
 set(LIBRGBMATRIX_INCLUDE_DIR "" CACHE PATH "Path to the folder containing the rpi-rgb-led-matrix headers")
 set(LIBRGBMATRIX_LIBRARY_DIR "" CACHE PATH "Path to the folder containing the rpi-rgb-led-matrix library")
 
+if("${LIBRGBMATRIX_INCLUDE_DIR}" STREQUAL "")
+    message(FATAL_ERROR "Please define LIBRGBMATRIX_INCLUDE_DIR")
+endif()
+
+if("${LIBRGBMATRIX_LIBRARY_DIR}" STREQUAL "")
+    message(FATAL_ERROR "Please define LIBRGBMATRIX_LIBRARY_DIR")
+endif()
+
 find_package(Freetype REQUIRED)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
