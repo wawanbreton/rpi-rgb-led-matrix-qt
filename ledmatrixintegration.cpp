@@ -53,31 +53,31 @@ bool LedMatrixIntegration::hasCapability(QPlatformIntegration::Capability cap) c
 
 void LedMatrixIntegration::parseOptions(const QStringList& paramList)
 {
-    QRegularExpression regexpGpioMapping("gpio-mapping=([a-z-]+)");
-    QRegularExpression regexpRows("rows=([0-9]+)");
-    QRegularExpression regexpCols("cols=([0-9]+)");
-    QRegularExpression regexpChain("chain=([0-9]+)");
-    QRegularExpression regexpParallel("parallel=([123])");
-    QRegularExpression regexpMultiplexing("multiplexing=([0-9]{1,2})");
+    QRegularExpression regexpGpioMapping("^gpio-mapping=([a-z-]+)$");
+    QRegularExpression regexpRows("^rows=([0-9]+)$");
+    QRegularExpression regexpCols("^cols=([0-9]+)$");
+    QRegularExpression regexpChain("^chain=([0-9]+)$");
+    QRegularExpression regexpParallel("^parallel=([123])$");
+    QRegularExpression regexpMultiplexing("^multiplexing=([0-9]{1,2})$");
     QRegularExpression regexpPixelMapper(
-        "((^pixel-mapper=|[+])(U-mapper|V-mapper|Mirror=[HV]|Rotate=[0-9]+))+");
-    QRegularExpression regexpPwmBits("pwm-bits=([0-9]{1,2})");
-    QRegularExpression regexpBrightness("brightness=([0-9]+)");
-    QRegularExpression regexpScanMode("scan-mode=([01])");
-    QRegularExpression regexpRowAddrType("row-addr-type=([0-4])");
+        "((^pixel-mapper=|[+])(U-mapper|V-mapper|Mirror=[HV]|Rotate=[0-9]+))+$");
+    QRegularExpression regexpPwmBits("^pwm-bits=([0-9]{1,2})$");
+    QRegularExpression regexpBrightness("^brightness=([0-9]+)$");
+    QRegularExpression regexpScanMode("^scan-mode=([01])$");
+    QRegularExpression regexpRowAddrType("^row-addr-type=([0-4])$");
     QString paramShowRefresh("show-refresh");
-    QRegularExpression regexpLimitRefresh("limit-refresh=([0-9]+)");
+    QRegularExpression regexpLimitRefresh("^limit-refresh=([0-9]+)$");
     QString paramInverse("inverse");
-    QRegularExpression regexpRgbSequence("rgb-sequence=([RGB]{3})");
-    QRegularExpression regexpPwmLsbNanoseconds("pwm-lsb-nanoseconds=([0-9]+)");
-    QRegularExpression regexpPwmDitherBits("pwm-dither-bits=([012])");
+    QRegularExpression regexpRgbSequence("^rgb-sequence=([RGB]{3})$");
+    QRegularExpression regexpPwmLsbNanoseconds("^pwm-lsb-nanoseconds=([0-9]+)$");
+    QRegularExpression regexpPwmDitherBits("^pwm-dither-bits=([012])$");
     QString paramDisableHardwarePulse("no-hardware-pulse");
-    QRegularExpression regexpPanelType("panel_type=(FM6126A|FM6127)");
-    QRegularExpression regexpSlowdownGpio("slowdown-gpio=([0-4])");
+    QRegularExpression regexpPanelType("^panel_type=(FM6126A|FM6127)$");
+    QRegularExpression regexpSlowdownGpio("^slowdown-gpio=([0-4])$");
     QString paramDaemon("daemon");
-    QRegularExpression regexpDropPrivileges("no-drop-privs=(-1|0|1)");
-    QRegularExpression regexpDropPrivilegesUser("drop-priv-user=([a-zA-Z0-9-_]+)");
-    QRegularExpression regexpDropPrivilegesGroup("drop-priv-group=([a-zA-Z0-9-_]+)");
+    QRegularExpression regexpDropPrivileges("^no-drop-privs=(-1|0|1)$");
+    QRegularExpression regexpDropPrivilegesUser("^drop-priv-user=([a-zA-Z0-9-_]+)$");
+    QRegularExpression regexpDropPrivilegesGroup("^drop-priv-group=([a-zA-Z0-9-_]+)$");
 
     QRegularExpressionMatch regexpMatch;
     for(const QString& param: paramList)
