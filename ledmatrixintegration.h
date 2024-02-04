@@ -50,5 +50,8 @@ class LedMatrixIntegration : public QPlatformIntegration
         mutable QScopedPointer<QPlatformNativeInterface> native_interface_;
         const Options options_;
         LedMatrixScreen* primary_screen_{nullptr};
+
+        // Store some config variable strings to make sure the c_str pointers remains valid
         std::string hardware_mapping_;
+        std::string pixel_mapper_;
 };

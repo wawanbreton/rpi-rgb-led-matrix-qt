@@ -56,15 +56,20 @@ LedMatrixIntegration::Options LedMatrixIntegration::parseOptions(const QStringLi
     options.driver_options.cols = 32;
     options.driver_options.chain_length = 1;
     options.driver_options.parallel = 1;
+    options.driver_options.multiplexing = 0;
+    options.driver_options.pixel_mapper_config = "";
+    options.driver_options.brightness = 100;
 
-    QRegularExpression regexpCols("cols=([0-9]+)");
-    QRegularExpression regexpRows("rows=([0-9]+)");
-    QRegularExpression regexpBrightness("brightness=([0-9]+)");
     QRegularExpression regexpGpioMapping("gpio-mapping=([a-z-]+)");
+    QRegularExpression regexpRows("rows=([0-9]+)");
+    QRegularExpression regexpCols("cols=([0-9]+)");
     QRegularExpression regexpChain("chain=([0-9]+)");
     QRegularExpression regexpParallel("parallel=([123])");
-    QRegularExpressionMatch regexpMatch;
+    QRegularExpression regexpMultiplexing("multiplexing=([0-9]{1,2})");
+    QRegularExpression regexpPixelMapper("((^|[+])(U-mapper|V-mapper|Mirror=[HV]|Rotate=[0-9]+))+");
+    QRegularExpression regexpBrightness("brightness=([0-9]+)");
 
+    QRegularExpressionMatch regexpMatch;
     for(const QString& param: paramList)
     {
         if(param == "enable_fonts"_L1)
@@ -79,23 +84,18 @@ LedMatrixIntegration::Options LedMatrixIntegration::parseOptions(const QStringLi
         {
             options.flags |= Option::FontconfigDatabase;
         }
-        else if((regexpMatch = regexpCols.match(param)).hasMatch())
+        else if((regexpMatch = regexpGpioMapping.match(param)).hasMatch())
         {
-            options.driver_options.cols = regexpMatch.captured(1).toInt();
+            hardware_mapping_ = regexpMatch.captured(1).toStdString();
+            options.driver_options.hardware_mapping = hardware_mapping_.c_str();
         }
         else if((regexpMatch = regexpRows.match(param)).hasMatch())
         {
             options.driver_options.rows = regexpMatch.captured(1).toInt();
         }
-        else if((regexpMatch = regexpBrightness.match(param)).hasMatch())
+        else if((regexpMatch = regexpCols.match(param)).hasMatch())
         {
-            options.driver_options.brightness = regexpMatch.captured(1).toInt();
-        }
-        else if((regexpMatch = regexpGpioMapping.match(param)).hasMatch())
-        {
-            // Store variable locally to make sure the c_str pointer remains valid
-            hardware_mapping_ = regexpMatch.captured(1).toStdString();
-            options.driver_options.hardware_mapping = hardware_mapping_.c_str();
+            options.driver_options.cols = regexpMatch.captured(1).toInt();
         }
         else if((regexpMatch = regexpChain.match(param)).hasMatch())
         {
@@ -104,6 +104,23 @@ LedMatrixIntegration::Options LedMatrixIntegration::parseOptions(const QStringLi
         else if((regexpMatch = regexpParallel.match(param)).hasMatch())
         {
             options.driver_options.parallel = regexpMatch.captured(1).toInt();
+        }
+        else if((regexpMatch = regexpMultiplexing.match(param)).hasMatch())
+        {
+            options.driver_options.multiplexing = regexpMatch.captured(1).toInt();
+        }
+        else if((regexpMatch = regexpPixelMapper.match(param)).hasMatch())
+        {
+            pixel_mapper_ = regexpMatch.captured(1).toStdString();
+            options.driver_options.pixel_mapper_config = pixel_mapper_.c_str();
+        }
+        else if((regexpMatch = regexpBrightness.match(param)).hasMatch())
+        {
+            options.driver_options.brightness = regexpMatch.captured(1).toInt();
+        }
+        else
+        {
+            qWarning() << "Unrecognized platform parameter" << param;
         }
     }
 
