@@ -8,4 +8,5 @@
 struct DriverOptions
 {
         QSize screen_size{32, 32};
+        int brightness{100};
 };

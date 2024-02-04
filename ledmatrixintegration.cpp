@@ -52,8 +52,9 @@ LedMatrixIntegration::Options LedMatrixIntegration::parseOptions(const QStringLi
 {
     Options options;
 
-    QRegularExpression regexpLedCols("led-cols=([0-9]+)");
-    QRegularExpression regexpLedRows("led-rows=([0-9]+)");
+    QRegularExpression regexpCols("cols=([0-9]+)");
+    QRegularExpression regexpRows("rows=([0-9]+)");
+    QRegularExpression regexpBrightness("brightness=([0-9]+)");
     QRegularExpressionMatch regexpMatch;
 
     for(const QString& param: paramList)
@@ -70,13 +71,17 @@ LedMatrixIntegration::Options LedMatrixIntegration::parseOptions(const QStringLi
         {
             options.flags |= Option::FontconfigDatabase;
         }
-        else if((regexpMatch = regexpLedCols.match(param)).hasMatch())
+        else if((regexpMatch = regexpCols.match(param)).hasMatch())
         {
             options.driver_options.screen_size.setWidth(regexpMatch.captured(1).toInt());
         }
-        else if((regexpMatch = regexpLedRows.match(param)).hasMatch())
+        else if((regexpMatch = regexpRows.match(param)).hasMatch())
         {
             options.driver_options.screen_size.setHeight(regexpMatch.captured(1).toInt());
+        }
+        else if((regexpMatch = regexpBrightness.match(param)).hasMatch())
+        {
+            options.driver_options.brightness = regexpMatch.captured(1).toInt();
         }
     }
 

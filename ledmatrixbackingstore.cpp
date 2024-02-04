@@ -21,7 +21,7 @@ LedMatrixBackingStore::LedMatrixBackingStore(QWindow* window, const DriverOption
     matrix_options.hardware_mapping = "adafruit-hat"; // or e.g. "regular"
     // options.chain_length = 3;
     // options.parallel = 2;
-    matrix_options.brightness = 20;
+    matrix_options.brightness = driver_options.brightness;
     // options.show_refresh_rate = true;
     matrix_options.rows = driver_options.screen_size.height();
     matrix_options.cols = driver_options.screen_size.width();
