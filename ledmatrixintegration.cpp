@@ -158,7 +158,7 @@ void LedMatrixIntegration::parseOptions(const QStringList& paramList)
         }
         else if((regexpMatch = regexpRgbSequence.match(param)).hasMatch())
         {
-            rgb_sequence_ = regexpMatch.captured(1).toInt();
+            rgb_sequence_ = regexpMatch.captured(1).toStdString();
             options_.driver_options.led_rgb_sequence = rgb_sequence_.c_str();
         }
         else if((regexpMatch = regexpPwmLsbNanoseconds.match(param)).hasMatch())
