@@ -111,7 +111,10 @@ LedMatrixIntegration::Options LedMatrixIntegration::parseOptions(const QStringLi
         }
         else if((regexpMatch = regexpPixelMapper.match(param)).hasMatch())
         {
-            pixel_mapper_ = regexpMatch.captured(1).toStdString();
+            // We don't use the original set of separators because they are recognized by Qt
+            // as delimitors for plugin settings
+            QString pixel_mapper = regexpMatch.captured(1).replace('+', ';').replace('=', ':');
+            pixel_mapper_ = pixel_mapper.toStdString();
             options.driver_options.pixel_mapper_config = pixel_mapper_.c_str();
         }
         else if((regexpMatch = regexpBrightness.match(param)).hasMatch())
