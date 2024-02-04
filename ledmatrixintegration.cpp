@@ -53,46 +53,39 @@ bool LedMatrixIntegration::hasCapability(QPlatformIntegration::Capability cap) c
 
 void LedMatrixIntegration::parseOptions(const QStringList& paramList)
 {
-    QRegularExpression regexpGpioMapping("^gpio-mapping=([a-z-]+)$");
-    QRegularExpression regexpRows("^rows=([0-9]+)$");
-    QRegularExpression regexpCols("^cols=([0-9]+)$");
-    QRegularExpression regexpChain("^chain=([0-9]+)$");
-    QRegularExpression regexpParallel("^parallel=([123])$");
-    QRegularExpression regexpMultiplexing("^multiplexing=([0-9]{1,2})$");
-    QRegularExpression regexpPixelMapper(
+    const QString paramEnableFonts("enable-fonts");
+    const QRegularExpression regexpGpioMapping("^gpio-mapping=([a-z-]+)$");
+    const QRegularExpression regexpRows("^rows=([0-9]+)$");
+    const QRegularExpression regexpCols("^cols=([0-9]+)$");
+    const QRegularExpression regexpChain("^chain=([0-9]+)$");
+    const QRegularExpression regexpParallel("^parallel=([123])$");
+    const QRegularExpression regexpMultiplexing("^multiplexing=([0-9]{1,2})$");
+    const QRegularExpression regexpPixelMapper(
         "((^pixel-mapper=|[+])(U-mapper|V-mapper|Mirror=[HV]|Rotate=[0-9]+))+$");
-    QRegularExpression regexpPwmBits("^pwm-bits=([0-9]{1,2})$");
-    QRegularExpression regexpBrightness("^brightness=([0-9]+)$");
-    QRegularExpression regexpScanMode("^scan-mode=([01])$");
-    QRegularExpression regexpRowAddrType("^row-addr-type=([0-4])$");
-    QString paramShowRefresh("show-refresh");
-    QRegularExpression regexpLimitRefresh("^limit-refresh=([0-9]+)$");
-    QString paramInverse("inverse");
-    QRegularExpression regexpRgbSequence("^rgb-sequence=([RGB]{3})$");
-    QRegularExpression regexpPwmLsbNanoseconds("^pwm-lsb-nanoseconds=([0-9]+)$");
-    QRegularExpression regexpPwmDitherBits("^pwm-dither-bits=([012])$");
-    QString paramDisableHardwarePulse("no-hardware-pulse");
-    QRegularExpression regexpPanelType("^panel_type=(FM6126A|FM6127)$");
-    QRegularExpression regexpSlowdownGpio("^slowdown-gpio=([0-4])$");
-    QString paramDaemon("daemon");
-    QRegularExpression regexpDropPrivileges("^no-drop-privs=(-1|0|1)$");
-    QRegularExpression regexpDropPrivilegesUser("^drop-priv-user=([a-zA-Z0-9-_]+)$");
-    QRegularExpression regexpDropPrivilegesGroup("^drop-priv-group=([a-zA-Z0-9-_]+)$");
+    const QRegularExpression regexpPwmBits("^pwm-bits=([0-9]{1,2})$");
+    const QRegularExpression regexpBrightness("^brightness=([0-9]+)$");
+    const QRegularExpression regexpScanMode("^scan-mode=([01])$");
+    const QRegularExpression regexpRowAddrType("^row-addr-type=([0-4])$");
+    const QString paramShowRefresh("show-refresh");
+    const QRegularExpression regexpLimitRefresh("^limit-refresh=([0-9]+)$");
+    const QString paramInverse("inverse");
+    const QRegularExpression regexpRgbSequence("^rgb-sequence=([RGB]{3})$");
+    const QRegularExpression regexpPwmLsbNanoseconds("^pwm-lsb-nanoseconds=([0-9]+)$");
+    const QRegularExpression regexpPwmDitherBits("^pwm-dither-bits=([012])$");
+    const QString paramDisableHardwarePulse("no-hardware-pulse");
+    const QRegularExpression regexpPanelType("^panel_type=(FM6126A|FM6127)$");
+    const QRegularExpression regexpSlowdownGpio("^slowdown-gpio=([0-4])$");
+    const QString paramDaemon("daemon");
+    const QRegularExpression regexpDropPrivileges("^no-drop-privs=(-1|0|1)$");
+    const QRegularExpression regexpDropPrivilegesUser("^drop-priv-user=([a-zA-Z0-9-_]+)$");
+    const QRegularExpression regexpDropPrivilegesGroup("^drop-priv-group=([a-zA-Z0-9-_]+)$");
 
     QRegularExpressionMatch regexpMatch;
     for(const QString& param: paramList)
     {
-        if(param == "enable_fonts"_L1)
+        if(param == paramEnableFonts)
         {
-            options_.flags |= Option::EnableFonts;
-        }
-        else if(param == "freetype"_L1)
-        {
-            options_.flags |= Option::FreeTypeFontDatabase;
-        }
-        else if(param == "fontconfig"_L1)
-        {
-            options_.flags |= Option::FontconfigDatabase;
+            options_.enable_fonts = true;
         }
         else if((regexpMatch = regexpGpioMapping.match(param)).hasMatch())
         {
@@ -202,7 +195,7 @@ void LedMatrixIntegration::parseOptions(const QStringList& paramList)
         }
         else
         {
-            qWarning() << "Unrecognized platform parameter" << param;
+            qWarning() << "Invalid platform parameter" << param;
         }
     }
 }
@@ -218,14 +211,14 @@ class DummyFontDatabase : public QPlatformFontDatabase
 
 QPlatformFontDatabase* LedMatrixIntegration::fontDatabase() const
 {
-    if(!font_database_ && (options_.flags.testFlag(Option::EnableFonts)))
+    if(!font_database_ && (options_.enable_fonts))
     {
         if(!font_database_)
         {
 #if QT_CONFIG(fontconfig)
             font_database_ = new QGenericUnixFontDatabase;
 #else
-            m_fontDatabase = QPlatformIntegration::fontDatabase();
+            font_database_ = QPlatformIntegration::fontDatabase();
 #endif
         }
     }

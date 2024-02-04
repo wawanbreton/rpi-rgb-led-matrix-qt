@@ -26,19 +26,9 @@ class LedMatrixIntegration : public QPlatformIntegration
         QPlatformNativeInterface* nativeInterface() const override;
 
     private:
-        enum class Option
-        {
-            None = 0x0,
-            EnableFonts = 0x1,
-            FreeTypeFontDatabase = 0x2,
-            FontconfigDatabase = 0x4
-        };
-
-        Q_DECLARE_FLAGS(OptionFlags, Option);
-
         struct Options
         {
-                OptionFlags flags{Option::None};
+                bool enable_fonts{false};
                 rgb_matrix::RGBMatrix::Options driver_options;
                 rgb_matrix::RuntimeOptions runtime_options;
         };
