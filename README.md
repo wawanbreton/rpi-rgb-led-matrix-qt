@@ -2,7 +2,7 @@
 
 This project provides a Qt6 Platform plugin that you can enable for any Qt application, to allow using a LED matrix as if it was a regular screen. This way you can use the Qt rendering stack to make nice displays and animations, or interactive UIs. QML is also supported:
 
-[Global plugin live demo](doc/showcase.gif)
+![Global plugin live demo](doc/showcase.gif)
 
 # How to use it
 * Build the [rpi-rgb-led-matrix library](https://github.com/hzeller/rpi-rgb-led-matrix)
@@ -66,7 +66,7 @@ font.setStyleStrategy(QFont::NoAntialias);
 app.setFont(font);
 ```
 
-[Disable font antialiasing](doc/font-antialiasing.png)
+![Disable font antialiasing](doc/font-antialiasing.png)
 
 # Possible improvement
 * The current implementation doesn't use the double-buffering mechanism provided by the library. In some cases this could improve performances, and possibly flickering, so it could be a good idea to have it as an option.
