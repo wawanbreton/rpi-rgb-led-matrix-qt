@@ -53,8 +53,10 @@ A lot of settings are available, depending on how you intend to use your LED mat
 # Tips
 ## Designing an UI with a very small screen size
 Even if you have the highest matrix resolution, it is really huge compared to a classic PC screen. So if you develop on your PC, you can use QT_SCALE_FACTOR to render your application at viewable size, for example:
+
 ```QT_SCALE_FACTOR=3 ./myamazingqtapp```
-Please not however that this gave me trouble with loading SVG files with large factors, for some reason...
+
+Please note however that this gave me trouble with loading SVG files with large factors, for some reason...
 
 ## Disabling font antialiasing
 Depending on the visual style of your application and the font you are using, you may want to disable font antialiasing. This can be achieved quite easily:
@@ -68,6 +70,6 @@ app.setFont(font);
 
 ![Disable font antialiasing](doc/font-antialiasing.png)
 
-# Possible improvement
+# Possible improvements
 * The current implementation doesn't use the double-buffering mechanism provided by the library. In some cases this could improve performances, and possibly flickering, so it could be a good idea to have it as an option.
 * Add scaling option to allow development of an UI at normal scale, then scale it down once on the device. This could be helpful to use the regular Qt widgets, although this is probably a bad idea in most cases. Moreover, this would be a huge decrease of peformances, because you would have to render first in high resolution, then scale down an image. However, if you feel a strong need for this feature, feel free to open an issue (or a PR !) so that it can be added.
