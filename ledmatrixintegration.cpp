@@ -15,11 +15,6 @@
 # include <QtGui/private/qgenericunixfontdatabase_p.h>
 #endif
 
-#if QT_CONFIG(freetype)
-# include <QtGui/private/qfontengine_ft_p.h>
-# include <QtGui/private/qfreetypefontdatabase_p.h>
-#endif
-
 #include <QtGui/private/qgenericunixeventdispatcher_p.h>
 
 using namespace Qt::StringLiterals;

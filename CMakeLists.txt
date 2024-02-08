@@ -13,9 +13,6 @@ if("${LIBRGBMATRIX_LIBRARY_DIR}" STREQUAL "")
     message(FATAL_ERROR "Please define LIBRGBMATRIX_LIBRARY_DIR")
 endif()
 
-# Include freetype for text rendering
-find_package(Freetype REQUIRED)
-
 # Include required Qt packages
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 qt_standard_project_setup()
@@ -33,9 +30,6 @@ target_sources(${PROJECT_NAME}
 
 # Include headers for rpi-rgb-led-matrix
 include_directories(${LIBRGBMATRIX_INCLUDE_DIR})
-
-# Include headers for freetype
-include_directories(${FREETYPE_INCLUDE_DIRS})
 
 # Include headers for Qt. This requires a bit of tricking because QPlatformIntegrationPlugin
 # generation requires private Qt headers.
